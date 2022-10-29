@@ -1,1 +1,35 @@
+To create stock_prices_tbl table in HIVE and stored data is in Parquet format
+
+CREATE EXTERNAL TABLE IF NOT EXISTS stock_prices_tbl
+(tradeDate Date,
+ Symbol String,
+ Series String,
+ PrevClose Double,
+ Open Double,
+ High Double,
+ Low	Double,
+ Last Double,
+ Close Double,
+ VWAP Double,
+ Volume Double,
+ Turnover	Double,
+ Trades	Double,
+ DeliverableVolume Double,
+ percentDeliverble Double)
+    ROW FORMAT DELIMITED
+        FIELDS TERMINATED BY ','
+    STORED AS PARQUET
+    LOCATION '[File Path of CSV File]';
+
+This will give date in mm/dd/yyyy instead of yyyy/dd/MM
+select from_unixtime(unix_timestamp(tradeDate ,'yyyy/dd/MM'), 'MM-dd-yyyy') from stock_prices_tbl;
+
+These command will create folder and will save incremental csv in HDFS
+-- hadoop fs -mkdir [File Path of data/incremental Folder]
+-- hadoop fs -put [File Path of Incremental CSV] [File Path of data/incremental Folder]
+-- hadoop fs -ls [File Path of data/incremental Folder] (To check whether file is uploaded or not)
+
+
+Add the incremental csv data in stock_prices_tbl
+LOAD DATA  INPATH '/data/incremental' INTO TABLE stock_prices_tbl.
 
